@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { LoremIpsumTypography, NavigationBar } from '../../components';
 import { Container, Grid } from '@mui/material';
+import { LoremIpsumTypography, NavigationBar } from '../../components';
 import { APIService } from '../../services';
 import { useTrackElement, useSession } from '../../hooks';
 import { Engagement } from '../../enums';
