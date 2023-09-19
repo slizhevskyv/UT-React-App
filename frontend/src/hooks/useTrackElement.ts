@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 const useTrackElement = (elementRef: React.RefObject<HTMLElement>) => {
 	const isElementSeenRef = useRef<boolean>(false);
-	const [isElementSeen, setIsElementSeen] = useState(false);
+	const [isElementSeen, setIsElementSeen] = useState<boolean>(false);
 
 	const intersectionCallback = useCallback(([entry]: IntersectionObserverEntry[], observer: IntersectionObserver) => {
 		if (entry.isIntersecting && !isElementSeenRef.current) {

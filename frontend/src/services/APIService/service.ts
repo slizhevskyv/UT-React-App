@@ -7,6 +7,8 @@ interface IAPI {
 	trackUser: () => Promise<void>;
 	trackEngagement: (type: Engagement) => Promise<void>;
 	getReport: () => Promise<{ totalUsers: number; engagedUsers: number }>;
+	getUser: () => Promise<{ avatarURL: string }>;
+	getEngagements: () => Promise<Record<Engagement, boolean> | null>;
 }
 
 class API implements IAPI {
@@ -74,6 +76,33 @@ class API implements IAPI {
 				totalUsers: 0,
 				engagedUsers: 0,
 			};
+		}
+	}
+
+	async getUser(): Promise<{ avatarURL: string }> {
+		try {
+			const { data: { data: { avatarURL = '' } = {} } = {} } =
+				await this.client.get<APIResponse<{ avatarURL: string }>>('/users');
+
+			return {
+				avatarURL,
+			};
+		} catch (e) {
+			return {
+				avatarURL: '',
+			};
+		}
+	}
+
+	async getEngagements(): Promise<Record<Engagement, boolean> | null> {
+		try {
+			const {
+				data: { data },
+			} = await this.client.get<APIResponse<Record<Engagement, boolean>>>('/engagements');
+
+			return data ?? null;
+		} catch (e) {
+			return null;
 		}
 	}
 }

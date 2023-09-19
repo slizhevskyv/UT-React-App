@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { LoremIpsumTypography, NavigationBar } from '../../components';
 import { Container, Grid } from '@mui/material';
 import { APIService } from '../../services';
@@ -10,12 +10,16 @@ const PARAGRAPH_AMOUNT = 20;
 
 const TrackingView = () => {
 	const imageRef = useRef<HTMLImageElement>(null);
-	const [avatarURL, setAvatarURL] = useState<string>('');
-	const isAvatarSeen = useTrackElement(imageRef);
-	const isSessionActive = useSession();
+	const isAvatarEngagementTracked = useTrackElement(imageRef);
+	const {
+		isSessionValid,
+		data: { avatarURL, trackedEngagements },
+		handlers: { setAvatarURL, setTrackedEngagements },
+	} = useSession();
 
 	useEffect(() => {
-		if (isSessionActive) return;
+		if (isSessionValid) return;
+
 		async function createUser() {
 			const { avatarURL } = await APIService.instance.createUser();
 
@@ -26,18 +30,20 @@ const TrackingView = () => {
 		}
 
 		createUser().then(trackUser).catch(console.error);
-	}, [isSessionActive]);
+	}, [isSessionValid, setAvatarURL]);
 
 	useEffect(() => {
-		if (!isAvatarSeen) {
+		if (!isAvatarEngagementTracked || trackedEngagements?.[Engagement.avatar]) {
 			return;
 		}
 		async function trackAvatarEngagement() {
 			await APIService.instance.trackEngagement(Engagement.avatar);
+
+			setTrackedEngagements(prevValue => ({ ...prevValue, [Engagement.avatar]: true }));
 		}
 
 		trackAvatarEngagement();
-	}, [isAvatarSeen]);
+	}, [isAvatarEngagementTracked, trackedEngagements, setTrackedEngagements]);
 
 	return (
 		<>
